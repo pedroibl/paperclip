@@ -16,6 +16,7 @@ Before making changes, read in this order:
 3. `doc/SPEC-implementation.md`
 4. `doc/DEVELOPING.md`
 5. `doc/DATABASE.md`
+6. `doc/CREATING-AGENTS.md`
 
 `doc/SPEC.md` is long-horizon product context.
 `doc/SPEC-implementation.md` is the concrete V1 build contract.
@@ -214,3 +215,111 @@ PR #2218 (`feat/external-adapter-phase1`) adds external adapter support. See roo
 - `createServerAdapter()` must include ALL optional fields (especially `detectModel`)
 - Built-in UI adapters can shadow external plugin parsers — remove built-in when fully externalizing
 - Reference external adapters: Hermes (`@henkey/hermes-paperclip-adapter` or `file:`) and Droid (npm)
+
+## 12. Security & Operational Procedures (Hermes/Tirith)
+
+For instances using the **Hermes** adapter with **Tirith** security scanning, agents must be unblocked for local API communication.
+
+### Security Allow-lists
+Agents require the following allow-listed in `~/.hermes/config.yaml` to function correctly within the Paperclip control plane:
+- `tirith:curl_pipe_shell` (Security Rule)
+- `script execution via -e/-c flag` (Hermes Internal Rule)
+- `curl -s http://127.0.0.1:3100/*` (Command/URL)
+- `curl -s http://localhost:3100/*` (Command/URL)
+
+### Initialization Log (Melbourne Print Hub)
+**Date:** 2026-04-17
+- **Project:** Melbourne Print Hub (`5a0a40ab-d537-44fc-a594-ad38f4850afe`)
+- **Action:** Fixed security blocks preventing agent heartbeats and issue checking.
+- **Action:** Created agent workspaces at `~/.paperclip/instances/default/workspaces/`.
+- **Milestone:** CEO successfully completed initial product listing task (MELA-3).
+- **Squad Status:** All agents are active, unblocked, and ready for work.
+
+---
+
+## 13. Operator Playbook — Common Tasks
+
+This section captures validated patterns for operating a Paperclip squad. See `~/Desktop/paperclip-proactive-agents-tutorial.md` for the full tutorial.
+
+### API base URL & company ID (Melbourne Print Hub)
+```
+BASE=http://127.0.0.1:3100/api
+CID=5a0a40ab-d537-44fc-a594-ad38f4850afe
+```
+
+### `priority` is a string enum
+The API rejects numeric priorities. Always use: `"critical"`, `"high"`, `"medium"`, `"low"`.
+
+### Creating an issue (task)
+```bash
+curl -s -X POST "$BASE/companies/$CID/issues" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"...","description":"...","priority":"high","assigneeAgentId":"<UUID>"}'
+```
+
+### Task routing
+| Work type | Agent |
+|-----------|-------|
+| Code, APIs, infra | CTO (`1df6f2ac`) |
+| Marketing, ads, SEO | CMO (`83591b00`) |
+| UX, design, wireframes | UX Designer (`e62d8d88`) |
+| Copy, blog, emails | Copywriter (`d6415d3c`) |
+| Strategy, delegation | CEO (`260b3a65`) |
+
+### Enabling heartbeats (makes agents proactive)
+```bash
+curl -s -X PATCH "$BASE/agents/<AGENT_ID>" \
+  -H "Content-Type: application/json" \
+  -d '{"runtimeConfig":{"heartbeat":{"enabled":true,"intervalSec":300,"maxConcurrentRuns":1}}}'
+```
+
+### Waking an agent immediately
+```bash
+curl -s -X POST "$BASE/agents/<AGENT_ID>/wakeup" \
+  -H "Content-Type: application/json" \
+  -d '{"reason":"Check your assigned tasks and work on the highest priority."}'
+```
+
+### Fixing blocked issues
+Blocked issues are almost always caused by an agent finishing work but not closing the issue. Recovery retries once, then blocks.
+```bash
+# Mark done
+curl -s -X PATCH "$BASE/issues/<ISSUE_ID>" -H "Content-Type: application/json" -d '{"status":"done"}'
+# Or reopen for retry
+curl -s -X PATCH "$BASE/issues/<ISSUE_ID>" -H "Content-Type: application/json" -d '{"status":"todo"}'
+```
+
+### Activating agents stuck in `pending_approval` with no approval records
+```bash
+# 1. Create approval record
+APPROVAL=$(curl -s -X POST "$BASE/companies/$CID/approvals" \
+  -H "Content-Type: application/json" \
+  -d '{"type":"hire_agent","title":"Activate agent","payload":{"agentId":"<AGENT_ID>"}}')
+APPROVAL_ID=$(echo $APPROVAL | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+
+# 2. Approve it
+curl -s -X POST "$BASE/approvals/$APPROVAL_ID/approve" \
+  -H "Content-Type: application/json" -d '{}'
+```
+
+### Creating goals and linking tasks to them
+```bash
+# Create goal
+GOAL=$(curl -s -X POST "$BASE/companies/$CID/goals" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"...","description":"...","level":"objective","status":"active"}')
+GOAL_ID=$(echo $GOAL | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+
+# Link issue to goal
+curl -s -X POST "$BASE/companies/$CID/issues" \
+  -H "Content-Type: application/json" \
+  -d "{\"title\":\"...\",\"goalId\":\"$GOAL_ID\",\"assigneeAgentId\":\"...\"}"
+```
+
+### Creating routines (scheduled agent runs)
+```bash
+curl -s -X POST "$BASE/companies/$CID/routines" \
+  -H "Content-Type: application/json" \
+  -d '{"agentId":"<UUID>","title":"Daily standup","prompt":"...","schedule":"0 8 * * 1-5","enabled":true}'
+```
+Cron quick ref: `0 8 * * 1-5` = 8am Mon–Fri, `0 */4 * * *` = every 4h, `*/30 * * * *` = every 30min.

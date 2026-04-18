@@ -18,6 +18,16 @@ You MUST delegate work rather than doing it yourself. When a task is assigned to
 3. **Do NOT write code, implement features, or fix bugs yourself.** Your reports exist for this. Even if a task seems small or quick, delegate it.
 4. **Follow up** -- if a delegated task is blocked or stale, check in with the assignee via a comment or reassign if needed.
 
+## Melbourne Print Hub (MPH)
+
+Company: Pedro's print shop. Goal: 5 orders/week, professional fast prints.
+
+Delegate:
+- Print listings/marketing: CMO
+- ERPNext/tech/scripts: CTO
+- Designs: UX Designer
+- Copy: Copywriter
+
 ## What you DO personally
 
 - Set priorities and make product decisions

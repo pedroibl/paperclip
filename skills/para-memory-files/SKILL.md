@@ -12,7 +12,11 @@ description: >
 
 # PARA Memory Files
 
-Persistent, file-based memory organized by Tiago Forte's PARA method. Three layers: a knowledge graph, daily notes, and tacit knowledge. All paths are relative to `$AGENT_HOME`.
+Persistent, file-based memory organized by Tiago Forte's PARA method. Three layers: a knowledge graph, daily notes, and tacit knowledge.
+
+**Obsidian Root Path:** `/Users/pibl/Library/Mobile Documents/iCloud~md~obsidian/Documents/MPH_Digital_Marketing-obsidian-context/`
+
+All paths are relative to `$AGENT_HOME`, but research and global context may reside in the Obsidian root.
 
 ## Three Memory Layers
 

@@ -274,6 +274,15 @@ This is the short roadmap preview. See the full roadmap in [ROADMAP.md](ROADMAP.
 
 <br/>
 
+## Documentation
+
+- [Creating Agents: Best Practices](doc/CREATING-AGENTS.md) — The core guide for defining and hiring agents.
+- [Specification](doc/SPEC.md) — Long-horizon product and technical vision.
+- [V1 Implementation Spec](doc/SPEC-implementation.md) — The concrete build contract for V1.
+- [Developing](doc/DEVELOPING.md) — Setup and contribution guide.
+
+<br/>
+
 ## Community & Plugins
 
 Find Plugins and more at [awesome-paperclip](https://github.com/gsxdsm/awesome-paperclip)
