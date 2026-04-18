@@ -54,3 +54,15 @@ tests/release-smoke/test-results/
 tests/release-smoke/playwright-report/
 .superset/
 .claude/worktrees/
+
+# Melbourne Print Hub research files
+server/text_*.json
+server/mela-3-product-listings.md
+.stitch/
+node
+paperclip@
+my-scripts/
+CLAUDE.md
+GEMINI.md
+doc/CREATING-AGENTS.md
+
