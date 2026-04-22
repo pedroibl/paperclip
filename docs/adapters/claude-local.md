@@ -63,3 +63,11 @@ Use the "Test Environment" button in the UI to validate the adapter config. It c
 - Working directory is absolute and available (auto-created if missing and permitted)
 - API key/auth mode hints (`ANTHROPIC_API_KEY` vs subscription login)
 - A live hello probe (`claude --print - --output-format stream-json --verbose` with prompt `Respond with hello.`) to verify CLI readiness
+
+## P0 Fixes & Operational Knowledge (2026-04-19)
+
+### Exit Signal Requirement
+When using `claude_local` in a Paperclip heartbeat loop, the agent **must** explicitly update the issue status to `done` or `in_review` before the process exits. Without this signal, the Paperclip control plane will eventually mark the issue as `blocked`.
+
+### CWD and Session Alignment
+Ensure the `cwd` in the agent configuration matches the directory where the agent is expected to perform work. Session resume is tied to the `cwd` to prevent context contamination across different projects.

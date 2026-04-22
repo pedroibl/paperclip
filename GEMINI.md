@@ -180,3 +180,34 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+---
+
+## 9. Agent Creation and Fine-Tuning (Reference)
+
+### 1. Python Script for Agent Creation
+Paperclip agents can be created using a Python script that targets the `POST /api/agents` endpoint. The JSON payload should include:
+- `name`: The agent's name.
+- `role`: The agent's role (e.g., cto, cmo).
+- `runtimeConfig`: Configuration for the agent's runtime.
+The script handles the initial setup of the agent's workspace and instruction files (`SOUL.md`, `AGENTS.md`, `TOOLS.md`).
+
+### 2. Fine-Tuning Principles
+To optimize agent performance:
+- **Instruction Optimization:** Refine `SOUL.md` and `AGENTS.md` to guide behavior.
+- **Context Injection:** Utilize `project_context` and `loaded_context` effectively.
+- **Feedback Loops:** Use long-term memory to capture user feedback and avoid repeating mistakes.
+- **Tool Selection:** Assign tools that match the agent's specific role for maximum efficiency.
+
+---
+
+## 10. P0 Operational Fixes (Applied 2026-04-19)
+
+### 1. Mandatory Exit Rules for HEARTBEAT.md
+- Agents must signal task completion via the API (`status: done`) before exiting. Failure to do so leads to blocked issues.
+
+### 2. Vault Path Consistency
+- Use the canonical path: `/Users/pibl/Library/Mobile Documents/iCloud~md~obsidian/Documents/MPH_Digital_Marketing-obsidian-context/`.
+
+### 3. Agent Tasking & Delegation
+- High-priority documentation research should be delegated to the Knowledge Agent to build the system's document context.

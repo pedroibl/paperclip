@@ -323,3 +323,36 @@ curl -s -X POST "$BASE/companies/$CID/routines" \
   -d '{"agentId":"<UUID>","title":"Daily standup","prompt":"...","schedule":"0 8 * * 1-5","enabled":true}'
 ```
 Cron quick ref: `0 8 * * 1-5` = 8am Mon–Fri, `0 */4 * * *` = every 4h, `*/30 * * * *` = every 30min.
+
+## 14. Agent Creation and Fine-Tuning (Reference)
+
+### 1. Python Script for Agent Creation
+Paperclip agents can be created using a Python script that targets the `POST /api/agents` endpoint. The JSON payload should include:
+- `name`: The agent's name.
+- `role`: The agent's role (e.g., cto, cmo).
+- `runtimeConfig`: Configuration for the agent's runtime.
+The script handles the initial setup of the agent's workspace and instruction files (`SOUL.md`, `AGENTS.md`, `TOOLS.md`).
+
+### 2. Fine-Tuning Principles
+To optimize agent performance:
+- **Instruction Optimization:** Refine `SOUL.md` and `AGENTS.md` to guide behavior.
+- **Context Injection:** Utilize `project_context` and `loaded_context` effectively.
+- **Feedback Loops:** Use long-term memory to capture user feedback and avoid repeating mistakes.
+- **Tool Selection:** Assign tools that match the agent's specific role for maximum efficiency.
+
+## 15. P0 Operational Fixes (Applied 2026-04-19)
+
+### 1. Mandatory Exit Rules for HEARTBEAT.md
+All agents must include an "Exit Rules" section in their `HEARTBEAT.md` to prevent issues from being stuck in `in_progress`.
+- **Work complete:** `PATCH /api/issues/{id}` with `{"status": "done"}` + summary comment.
+- **Waiting on review:** `PATCH` with `{"status": "in_review"}` + comment.
+- **Real blocker:** `PATCH` with `{"status": "blocked"}` + comment.
+- **Never exit** while the issue is still `in_progress`.
+
+### 2. Correct Obsidian Vault Path
+The active vault path for Melbourne Print Hub is:
+`/Users/pibl/Library/Mobile Documents/iCloud~md~obsidian/Documents/MPH_Digital_Marketing-obsidian-context/`
+Reference to `MelbPrintHub_2026_Vault` is deprecated and must be updated in all agent instructions.
+
+### 3. Knowledge Agent Validation
+The Knowledge Agent (f10ba418) is tasked with extracting documentation (e.g., Hermes docs) and creating document contexts. This validates its performance in deep research and documentation extraction.
